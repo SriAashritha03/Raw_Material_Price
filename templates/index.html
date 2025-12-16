@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Turmeric Price Forecast</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(to bottom, #e3f2fd, #f1f8e9);
+        }
+
+        .header {
+            background: #2e7d32;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin-top: 6px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #2e7d32;
+            border-left: 6px solid #81c784;
+            padding-left: 10px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        select, input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 18px;
+            border-radius: 6px;
+            border: 1px solid #bbb;
+            font-size: 14px;
+            background: #fafafa;
+        }
+
+        select:focus, input[type="date"]:focus {
+            outline: none;
+            border-color: #2e7d32;
+            box-shadow: 0 0 6px rgba(46,125,50,0.4);
+        }
+
+        button {
+            width: 100%;
+            background: #388e3c;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 17px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        button:hover {
+            background: #1b5e20;
+            transform: translateY(-2px);
+        }
+
+        .footer-note {
+            margin-top: 25px;
+            font-size: 13px;
+            text-align: center;
+            color: #555;
+        }
+
+        .footer-note span {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>🌾Forecast Fusion</h1>
+    <p>Smart Agriculture using GRU Deep Learning</p>
+</div>
+
+<div class="container">
+    <div class="section-title">Market Input Details</div>
+
+    <form method="POST" action="/predict">
+
+        <label>District</label>
+        <select name="district" required>
+            {% for d in districts %}
+                <option value="{{ d }}">{{ d }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Commodity</label>
+        <select name="commodity" required>
+            {% for c in commodities %}
+                <option value="{{ c }}">{{ c }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Variety</label>
+        <select name="variety">
+            <option value="">Any</option>
+            {% for v in varieties %}
+                <option value="{{ v }}">{{ v }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Grade</label>
+        <select name="grade">
+            <option value="">Any</option>
+            {% for g in grades %}
+                <option value="{{ g }}">{{ g }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Forecast Date</label>
+        <input type="date" name="date" required>
+
+        <button type="submit">📈 Predict Price</button>
+    </form>
+
+    <div class="footer-note">
+        AI-Driven Forecast | <span>₹ / Quintal</span>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction Result</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: linear-gradient(to bottom, #e3f2fd, #f1f8e9);
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 650px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin: auto;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2e7d32;
+            margin-bottom: 25px;
+        }
+
+        .info-row {
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .info-row span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .price-box {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #c8e6c9;
+            color: #1b5e20;
+            text-align: center;
+        }
+
+        .price {
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .back-btn {
+            display: block;
+            margin-top: 25px;
+            text-align: center;
+            background: #388e3c;
+            color: white;
+            padding: 12px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background: #1b5e20;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Forecasted Market Prices</h2>
+
+    <div class="info-row"><span>District:</span> {{ district }}</div>
+    <div class="info-row"><span>Commodity:</span> {{ commodity }}</div>
+    <div class="info-row"><span>Variety:</span> {{ variety if variety else "Any" }}</div>
+    <div class="info-row"><span>Grade:</span> {{ grade if grade else "Any" }}</div>
+    <div class="info-row"><span>Forecast Date:</span> {{ date }}</div>
+
+    <div class="price-box">
+        Minimum Price<br>
+        <div class="price">₹ {{ min_price }} / Quintal</div>
+    </div>
+
+    <div class="price-box" style="margin-top:15px;">
+        Maximum Price<br>
+        <div class="price">₹ {{ max_price }} / Quintal</div>
+    </div>
+
+    <a href="/" class="back-btn">🔙 Predict Again</a>
+</div>
+
+</body>
+</html>
