@@ -47,8 +47,8 @@ scaler = joblib.load(SCALER_PATH)
 # -------------------------------------------------
 def build_dummy_window(target_date):
     """
-    Creates a synthetic recent time window so the GRU model
-    can generate a forecast based on learned patterns.
+    Builds a synthetic recent window using correct feature names,
+    compatible with the trained MinMaxScaler.
     """
     if isinstance(target_date, str):
         target_date = datetime.strptime(target_date, "%Y-%m-%d")
@@ -56,27 +56,29 @@ def build_dummy_window(target_date):
     month = target_date.month
     week = target_date.isocalendar()[1]
 
-    # Neutral baseline values (learned patterns dominate)
     base_min = 0.5
     base_max = 0.6
 
-    window = []
+    rows = []
     for _ in range(SEQ_LEN):
-        row = [
-            base_min,
-            base_max,
-            month,
-            week,
-            base_min,
-            base_max,
-            0.0,
-            0.0
-        ]
-        window.append(row)
+        rows.append({
+            "min_price": base_min,
+            "max_price": base_max,
+            "month": month,
+            "week": week,
+            "min_r4": base_min,
+            "max_r4": base_max,
+            "min_pct_1": 0.0,
+            "max_pct_1": 0.0
+        })
 
-    window = np.array(window)
-    window_scaled = scaler.transform(window)
-    return window_scaled.reshape(1, SEQ_LEN, len(FEATURES))
+    df_window = np.array([[r[f] for f in FEATURES] for r in rows])
+    df_window = scaler.transform(
+        np.asarray(df_window)
+    )
+
+    return df_window.reshape(1, SEQ_LEN, len(FEATURES))
+
 
 # -------------------------------------------------
 # Routes
@@ -93,36 +95,42 @@ def index():
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    district = request.form.get("district")
-    commodity = request.form.get("commodity")
-    variety = request.form.get("variety") or "Any"
-    grade = request.form.get("grade") or "Any"
-    target_date = request.form.get("date")
+    try:
+        district = request.form.get("district")
+        commodity = request.form.get("commodity")
+        variety = request.form.get("variety") or "Any"
+        grade = request.form.get("grade") or "Any"
+        target_date = request.form.get("date")
 
-    # Build synthetic input window
-    x = build_dummy_window(target_date)
+        x = build_dummy_window(target_date)
 
-    # Predict (scaled)
-    pred_scaled = model.predict(x)[0]
+        pred_scaled = model.predict(x)[0]
 
-    # Inverse transform
-    dummy = np.zeros((1, len(FEATURES)))
-    dummy[:, 0:2] = pred_scaled.reshape(1, 2)
-    inv = scaler.inverse_transform(dummy)
+        dummy = np.zeros((1, len(FEATURES)))
+        dummy[:, 0:2] = pred_scaled.reshape(1, 2)
+        inv = scaler.inverse_transform(dummy)
 
-    pred_min = float(inv[0, 0])
-    pred_max = float(inv[0, 1])
+        pred_min = float(inv[0, 0])
+        pred_max = float(inv[0, 1])
 
-    return render_template(
-        "result.html",
-        district=district,
-        commodity=commodity,
-        variety=variety,
-        grade=grade,
-        date=target_date,
-        min_price=round(pred_min, 2),
-        max_price=round(pred_max, 2)
-    )
+        return render_template(
+            "result.html",
+            district=district,
+            commodity=commodity,
+            variety=variety,
+            grade=grade,
+            date=target_date,
+            min_price=round(pred_min, 2),
+            max_price=round(pred_max, 2)
+        )
+
+    except Exception as e:
+        # Render-safe error page
+        return f"""
+        <h3>Prediction failed</h3>
+        <p>{str(e)}</p>
+        <a href="/">Go Back</a>
+        """
 
 # -------------------------------------------------
 # Run
